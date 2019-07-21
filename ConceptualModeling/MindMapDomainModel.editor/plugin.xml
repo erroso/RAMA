@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.ui.newWizards">
+      <!-- @generated MindMapDomainModel -->
+      <category
+            id="org.eclipse.emf.ecore.Wizard.category.ID"
+            name="%_UI_Wizard_category"/>
+      <wizard
+            id="mmclass.presentation.MmclassModelWizardID"
+            name="%_UI_MmclassModelWizard_label"
+            class="mmclass.presentation.MmclassModelWizard"
+            category="org.eclipse.emf.ecore.Wizard.category.ID"
+            icon="icons/full/obj16/MmclassModelFile.gif">
+         <description>%_UI_MmclassModelWizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
+
+   <extension point="org.eclipse.ui.editors">
+      <!-- @generated MindMapDomainModel -->
+      <editor
+            id="mmclass.presentation.MmclassEditorID"
+            name="%_UI_MmclassEditor_label"
+            icon="icons/full/obj16/MmclassModelFile.gif"
+            extensions="mmclass"
+            class="mmclass.presentation.MmclassEditor"
+            contributorClass="mmclass.presentation.MmclassActionBarContributor">
+      </editor>
+   </extension>
+
+</plugin>

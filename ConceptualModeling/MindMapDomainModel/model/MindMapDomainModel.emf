@@ -1,0 +1,55 @@
+@namespace(uri="MindMapDomainModel", prefix="MindMapDomainModel")
+package mmclass;
+
+@gmf.diagram(foo="bar", diagram.extension="ddm", model.extension="mdm")
+class MindMapModel {  	  	
+  	val Node[*] nodes;
+	val Edge[*] edges;
+	attr boolean clientMode;				
+}
+
+@gmf.link(label="name", source="source", target="target",color="128,128,128", width="1", label.placement="external", target.constraint = "self <> oppositeEnd")
+class Edge {
+	ref Node[1] source;
+	ref Node[1] target;
+	attr String name;		
+}
+
+class Node {
+	unique attr String nodeText;
+	attr String description;
+	attr String customIcon; 	
+}
+
+@gmf.node(label="nodeText", label.placement="internal", resizable="false")
+class Attribute extends Node {	
+	attr String type;
+}
+
+@gmf.node(label="nodeText", label.placement="internal", label.icon="none", figure="rounded", resizable="false")
+class RootNode extends Node {
+}	
+class FloatNode extends Node {	
+}
+
+@gmf.node(label="nodeText", label.placement="internal", resizable="false")
+class Enum extends FloatNode {
+	val Constant[*] constants;	
+}
+
+@gmf.node(label="nodeText", label.placement="internal", resizable="false")
+class Constant extends Node {
+}
+
+@gmf.node(label="nodeText",  label.placement="internal", resizable="false")
+class Entity extends Node {	
+	ref Attribute[+] attributes;
+	ref Entity[*] entities;
+	attr String oclRules;			 
+}
+
+@gmf.node(label="nodeText",  label.placement="internal", resizable="false")
+class AssociationEntity extends Entity {	
+	@gmf.compartment(layout="list", collapsible="true")
+	val Entity[2] associations;	 
+}

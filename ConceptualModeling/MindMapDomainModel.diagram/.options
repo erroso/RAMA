@@ -1,0 +1,7 @@
+# Tracing options for the MindMapDomainModel.diagram plug-in
+
+# Common issues
+MindMapDomainModel.diagram/debug=false
+
+# Visual IDs
+MindMapDomainModel.diagram/debug/visualID=false

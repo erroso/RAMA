@@ -1,0 +1,6 @@
+[%	
+	TemplateFactory.setTemplateRoot(".");
+	var root = "./transformations/";
+	var t : Template := TemplateFactory.load('./TransDetails/MMClass2Use.egl');
+	t.generate(root+"/use/domain_model.use");
+%]

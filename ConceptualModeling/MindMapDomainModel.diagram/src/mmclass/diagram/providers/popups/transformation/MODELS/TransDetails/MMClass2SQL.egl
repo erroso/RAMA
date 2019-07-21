@@ -1,0 +1,95 @@
+CREATE DATABASE [% out.println(MMClass!RootNode.allInstances().first().nodeText); %]
+
+[% for (node in MMClass!Entity) {
+if (MMClass!Edge.allInstances().select( e : Edge | e.source = node).size() > 0) {
+out.print(printNode(node));
+}
+}
+
+for (node in MMClass!Enum) {
+if (MMClass!Edge.allInstances().select( e : Edge | e.source = node).size() > 0) {
+out.print(printEnum(node));
+}
+}
+
+operation Any printAttribute(nodeText : String, connector : String) : String {
+		return nodeText.firstToLowerCase() + connector + "varchar(255)";	
+}
+
+operation Any printConstant(nodeText : String) : String {
+		return "'"+nodeText.toUpperCase()+"'";	
+}
+
+operation Any printEntity(nodeText : String) : String {
+	return nodeText.firstToUpperCase();	
+}
+
+operation Any printAttributes(node : MMClass!Node, connector : String) : String {
+	var attributes = "\n";
+	attributes = attributes + "\t" + printID(node) + "\n";	
+	if (node.type().name.equals("RootNode")) {
+		for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+			attributes = attributes + "\t"+e.target.nodeText.firstToLowerCase() + connector + e.target.nodeText.firstToUpperCase();
+			attributes = attributes + ",\n";
+		}			
+	} else {
+		for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+			attributes = attributes + "\t"+printAttribute(e.target.nodeText,connector);
+			attributes = attributes + ",\n";
+		}	
+	}
+	attributes = attributes + "\t" + "PRIMARY KEY("+node.nodeText.toLowerCase()+"ID"+")";
+	return attributes;
+}
+
+operation Any printID(node : MMClass!Node) : String {
+	return node.nodeText.toLowerCase()+"ID"+ " " + "int" + " NOT NULL AUTO_INCREMENT,";
+}
+
+operation Any printForeignID(node : MMClass!Node, reference : MMClass!Node) : String {
+	return node.nodeText.toLowerCase()+"ID"+ " " + "int" + " FOREIGN KEY REFERENCES " + reference.nodeText.firstToUpperCase()+"("+reference.nodeText.toLowerCase()+"ID"+")";
+}
+
+operation Any printNode(node : MMClass!Node) : String {
+	var result = "";	
+	var title = "CREATE TABLE";
+	var between = "";
+	var foreign = "";
+	var attributes = printAttributes(node, " ");
+	if (node.type().name.equals("AssociationEntity")) {
+		var ac : MMClass!AssociationEntity;
+		ac = node;				
+		if (ac.associations.size() > 0) {			
+			foreign = foreign + "\t" + printForeignID(ac.associations[0], ac.associations[0]) +",\n";
+			foreign = foreign + "\t" + printForeignID(ac.associations[1], ac.associations[1]) +"\n";						
+		}
+	}
+	title = title + " " + printEntity(node.nodeText);
+	result = title + "\n(";	
+	result = result + attributes;
+	if (foreign <> "")
+		result = result + ",\n" + foreign;
+	else {
+		result = result + "\n";
+	}
+	result = result + ")" + "\n\n";
+	return result;
+}
+
+operation Any printEnum(node : MMClass!Node) : String {
+	var result = "";	
+	var title = "CREATE TABLE";	
+	var attributes = "\n\tname ENUM(";
+	for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+			attributes = attributes + printConstant(e.target.nodeText);
+			if(hasMore){attributes = attributes + ",";}
+	}	
+	attributes = attributes + ")\n";
+	title = title + " " + printEntity(node.nodeText);
+	result = title + "\n(";	
+	result = result + attributes;	
+	result = result + ")" + "\n\n";
+	return result;
+}
+ %]
+

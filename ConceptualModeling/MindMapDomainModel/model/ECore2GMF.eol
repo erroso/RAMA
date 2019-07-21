@@ -1,0 +1,212 @@
+// <----- NAMES OF EACH OBJECT 
+
+var LEAF_NAME = "Attribute";
+var CONSTANT_NAME = "Constant";
+var RELATIONSHIP_NAME = "Entity";
+var CENTER_NAME = "Domain";
+
+//-----------------------------
+
+var FLOAT_NODE_NAME = "Enumeration";
+
+// ----------------------------
+"begin".println();
+
+"restritions settings".println();
+//setDefaultLinkRestrictions();
+
+"canvas settings".println();
+
+setLeafNode(LEAF_NAME); //<------------------------------ LEAF NODE DEAFULT SETTINGS
+setConstantNode(CONSTANT_NAME); //<---------------------- CONSTANT NODE DEAFULT SETTINGS
+setRelationshipNode(RELATIONSHIP_NAME); //<------------ RELATIONSHIP NODE DEAFULT SETTINGS
+setCenterNode(CENTER_NAME); //<-------------------------- CENTER NODE DEAFULT SETTINGS
+
+"end canvas senttings".println();
+
+//<---------------------------------------------------------------------------------------------------- PALLETE
+"pallete settings".println();
+
+//var palette = new GmfTool!Palette;
+changePalleteNames("RootNode",CENTER_NAME,"Create new Domain");
+changePalleteNames("Enum","Enumeration","Create new Enumeration");
+changePalleteNames("AssociationEntity","Association Entity","Create new Association Entity");
+
+//------ SPECIFIC
+//changePalleteNames("FloatNode",FLOAT_NODE_NAME,"Create new Enumerate");
+
+"end pallete settings".println();
+
+//<---------------------------------------------------------------------------------------------------- SPECEFIC THINGS
+"specific settings".println();
+
+//setSpecificSettings();
+
+"end specific settings".println();
+-------
+
+--var figureClass = node.name + 'Figure';
+ 
+
+"end".println();
+
+//WHERE TO PUT ALL THINGS SEPECIFIC TO THIS DSL
+operation setSpecificSettings() {
+	var FloatFigure = GmfGraph!RoundedRectangle.all.selectOne(f | f.name = 'FloatNodeFigure');
+	var FloatNode = GmfGraph!Node.all.selectOne(f | f.name = 'FloatNode');
+
+	FloatFigure.border.insets.bottom = 1;
+	FloatFigure.border.insets.top = 5;
+
+	//relationshipFigure.fill = false;
+	//relationshipFigure.outline = false;
+	FloatFigure.children.first.text = FLOAT_NODE_NAME; //<---------- RELATIONSHIP INITIAL NAME	
+}
+
+//<---------------------------------------------------------------------------------------------------- DEFAULT SETTINGS
+operation setDefaultLinkRestrictions() {
+	var linkMapping = GmfMap!LinkMapping.all.selectOne(f | f);
+	var linkConstraint = GmfMap!LinkConstraints;
+	var sourceEndConstraint = GmfMap!Constraint;
+	sourceEndConstraint.println();
+	//sourceEndConstraint.body = "self <> oppositeEnd";
+	//linkConstraint.children.add(sourceEndConstraint);
+	//linkMapping.linkConstraints = linkConstraint;
+}
+operation changePalleteNames(search : String, newTitle : String, newDes : String) {
+	var creationTool = GmfTool!CreationTool.all.selectOne(c | c.title = search);
+	creationTool.title = newTitle;
+	creationTool.description = newDes;
+}
+
+operation setRelationshipNode(relationship_name) {
+	var relationshipFigure = GmfGraph!RoundedRectangle.all.selectOne(f | f.name = 'EntityFigure');
+	var relationshipNode = GmfGraph!Node.all.selectOne(f | f.name = 'Entity');
+
+	relationshipFigure.border.insets.bottom = 1;
+	relationshipFigure.border.insets.top = 1;
+
+	//relationshipFigure.fill = false;
+	//relationshipFigure.outline = false;
+	relationshipFigure.children.first.text = relationship_name; //<---------- RELATIONSHIP INITIAL NAME
+	
+	//relationshipFigure.children.add(createMindMapStyle("Relationship","Softgoal"));
+	//relationshipNode.facets.add(setNodeDimensions());
+}
+
+operation setLeafNode(leaf_name) {
+	var leafFigure = GmfGraph!RoundedRectangle.all.selectOne(f | f.name = 'AttributeFigure');
+	var leafNode = GmfGraph!Node.all.selectOne(f | f.name = 'Attribute');
+
+	delete leafFigure.border;
+
+	leafFigure.fill = false;
+	leafFigure.outline = false;
+	leafFigure.children.first.text = leaf_name; //<---------- LEAF INITIAL NAME
+	
+	leafFigure.children.add(createMindMapStyle("Attribute",leaf_name));
+	leafNode.facets.add(setNodeDimensions());
+	//leafNode.facets.add(setNodeResizeConstraints());
+}
+operation setConstantNode(leaf_name) {
+	var leafFigure = GmfGraph!RoundedRectangle.all.selectOne(f | f.name = 'ConstantFigure');
+	var leafNode = GmfGraph!Node.all.selectOne(f | f.name = 'Constant');
+
+	delete leafFigure.border;
+
+	leafFigure.fill = false;
+	leafFigure.outline = false;
+	leafFigure.children.first.text = leaf_name; //<---------- LEAF INITIAL NAME
+	
+	leafFigure.children.add(createMindMapStyle("Constant",leaf_name));
+	leafNode.facets.add(setNodeDimensions());
+	//leafNode.facets.add(setNodeResizeConstraints());
+}
+operation setCenterNode(center_name) {
+	var centerFigure = GmfGraph!RoundedRectangle.all.selectOne(f | f.name = 'RootNodeFigure');
+	var centerLabelFigure = GmfGraph!Label.all.selectOne(f | f.name = 'RootNodeLabelFigure');
+	
+	centerFigure.children.first.text = center_name; //<---------- INITIAL NAME 
+	
+	var background = new GmfGraph!ConstantColor;
+	// white
+	// black
+	// gray
+	// lightgray
+	// red
+	// orange
+	// green
+	// lightgreen
+	// cyan
+	// lightblue
+	// blue
+	// darkblue
+	background.value = GmfGraph!ColorConstants#orange; //<------------------------------ BACKGROUND COLOR
+	centerFigure.backgroundColor = background;
+	
+	var b_font = new GmfGraph!BasicFont;
+	b_font.style = GmfGraph!FontStyle#BOLD;
+	b_font.height = 14; //<------------------------------ FONT SIZE
+	centerLabelFigure.font = b_font;
+	
+}
+operation setNodeDimensions() : GmfGraph!DefaultSizeFacet {
+	var dsf = new GmfGraph!DefaultSizeFacet;
+	var d_s = new GmfGraph!Dimension;
+	d_s.dx = 50; //<------------------------------ SIZE X
+	d_s.dy = 10; //<------------------------------ SIZE Y
+	dsf.defaultSize = d_s;	
+	return dsf;
+}
+operation setNodeResizeConstraints() : GmfGen!ResizeConstraints {
+	  -- NORTH (1), SOUTH (4), EAST (8) and WEST (16): all handles are not resizable
+	  var resizeconstraint_not_resizable = new GmfGen!ResizeConstraints;
+	  resizeconstraint_not_resizable.nonResizeHandles := 31;
+	  return resizeconstraint_not_resizable;
+}
+operation createMindMapStyle(name : String, displayName : String) : GmfGraph!Rectangle {
+	//var mainRectangle = new GmfGraph!Rectangle;	
+	var secRectangle = new GmfGraph!Rectangle;
+	
+	//mainRectangle.name = name+"Figure";
+	secRectangle.name = name+"NameRectangleFigure";
+	secRectangle.fill = false;
+	secRectangle.outline = false;
+	
+	//var mr_borderLayout = new GmfGraph!BorderLayout;
+	//var mr_insets = new GmfGraph!Insets;
+	
+	//mainRectangle.layout = mr_borderLayout;
+	//mainRectangle.insets = mr_insets;
+	
+	var sec_border_layout = new GmfGraph!BorderLayoutData;
+	sec_border_layout.vertical = true;	
+	
+	var sec_stack_layout = new GmfGraph!StackLayout;
+	
+	var sec_insets = new GmfGraph!Insets;
+	sec_insets.bottom = 5;
+	sec_insets.left = 5;
+	
+	var sec_customBorder = new GmfGraph!CustomBorder;
+	sec_customBorder.qualifiedClassName = "org.eclipse.gmf.runtime.draw2d.ui.figures.OneLineBorder";
+	
+	var sec_customAttribute = new GmfGraph!CustomAttribute;
+	sec_customAttribute.name = "position";
+	sec_customAttribute.value = "org.eclipse.draw2d.PositionConstants.BOTTOM";
+	
+	var sec_Label = new GmfGraph!Label;
+	sec_Label.name = name+"NameFigure";
+	//sec_Label.text = displayName;
+	
+	secRectangle.layoutData = sec_border_layout; 
+	secRectangle.layout = sec_stack_layout;
+	secRectangle.insets = sec_insets;
+	secRectangle.border = sec_customBorder;
+	secRectangle.attributes.add(sec_customAttribute);
+	secRectangle.children.add(sec_Label);
+	
+	//mainRectangle.children.add(secRectangle);
+		
+	return secRectangle;
+} 	

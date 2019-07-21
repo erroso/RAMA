@@ -1,0 +1,40 @@
+[% out.setContentType("Java"); %]
+[%out.print(printNode(Enum, " ", null));%]
+
+[% operation Any printAttribute(nodeText : String, description : String, connector : String, dic : Map) : String {
+	return  nodeText.toUpperCase() + printDescription(description);
+}
+
+operation Any printEntity(nodeText : String) : String {
+	return nodeText.toUpperCase();	
+}
+
+operation Any printDescription(description : String) : String {
+	if (description == null) {
+		return;
+	} else if (description.trim.length == 0) {
+		return;
+	}
+	return "/** " + description + " */\n";	
+}
+
+operation Any printAttributes(node : MMClass!Node, connector : String, dic : Map) : String {
+	var attributes = "";	
+	for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+		attributes = attributes + " "+printAttribute(e.target.nodeText,connector,e.target.description,dic);
+		if (hasMore) { attributes = attributes + ","; }
+	}
+	return attributes;
+}
+%]
+[%operation Any printNode(node : MMClass!Node, connector : String, dic : Map) : String {
+	var result = "";
+	var description = printDescription(node.description);
+	var title = "public enum";
+	var attributes = printAttributes(node, connector, dic);	
+	title = title + " " + printEntity(node.nodeText);
+	result = title + " {";		
+	result = result + attributes + " }\n";
+	result = result + description + "\n";	
+	return result;
+}%]

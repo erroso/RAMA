@@ -1,0 +1,7 @@
+[% 
+ for (node in MMClass!Entity.allInstances().select(r : Entity | r.oclRules <> null)) {
+	out.println("-- RULES FOR " + node.nodeText + " ----------------\n");	 	
+	out.println(node.oclRules);		
+	out.println("\n"+ "--" +"------------------------------------------\n\n"); 
+}
+%]

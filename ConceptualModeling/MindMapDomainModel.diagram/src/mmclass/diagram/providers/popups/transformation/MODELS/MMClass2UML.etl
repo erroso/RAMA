@@ -1,0 +1,48 @@
+pre {
+  	"Running ETL".println();
+  	var umlPackage : new UML!Package;
+}
+
+post {
+	"Done".println();
+}
+rule RootNodeToDomainClass
+	transform e : MMClass!RootNode
+	to c : UML!Class {
+	
+	c.name = e.nodeText;	
+}
+
+rule EntityToClass
+	transform e : MMClass!Entity
+	to c : UML!Class {
+	
+	guard : not e.type.name.equals("AssociationEntity")
+	
+	("Parsing " + e.nodeText + " to Class").println();	
+	c.name = e.nodeText;
+	for (a in e.attributes) {
+		var property : new UML!Property;
+		property.name = a.nodeText;
+		c.ownedAttribute.add(property);		
+	}	
+}
+
+rule AssociationEntityToClass
+	transform e : MMClass!AssociationEntity
+	to c : UML!AssociationClass {
+		
+	
+	("Parsing " + e.nodeText + " to Class").println();	
+	c.name = e.nodeText;
+	for (a in e.attributes) {
+		var property : new UML!Property;
+		property.name = a.nodeText;
+		c.ownedAttribute.add(property);		
+	}	
+	for (ass in e.associations) {
+		var property : new UML!Property;
+		property.name = ass.nodeText;
+		c.ownedEnd.add(property);		
+	}
+}

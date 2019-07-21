@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="20110701" xmlns:xmi="http://www.omg.org/spec/XMI/20110701" xmlns:uml="http://www.eclipse.org/uml2/4.0.0/UML">
+  <uml:Package xmi:id="_JWqjMKRjEeOW-_uBDkdYPw"/>
+  <uml:Class xmi:id="_JWrKQKRjEeOW-_uBDkdYPw" name="Courses">
+    <ownedAttribute xmi:id="_JWsYYaRjEeOW-_uBDkdYPw" name="Name"/>
+  </uml:Class>
+  <uml:Class xmi:id="_JWrKQaRjEeOW-_uBDkdYPw" name="Students">
+    <ownedAttribute xmi:id="_JWs_cKRjEeOW-_uBDkdYPw" name="Name"/>
+  </uml:Class>
+  <uml:Class xmi:id="_JWrxUKRjEeOW-_uBDkdYPw" name="Teachers">
+    <ownedAttribute xmi:id="_JWtmgKRjEeOW-_uBDkdYPw" name="Name"/>
+  </uml:Class>
+  <uml:Class xmi:id="_JWrxUaRjEeOW-_uBDkdYPw" name="Students">
+    <ownedAttribute xmi:id="_JWuNkKRjEeOW-_uBDkdYPw" name="Name"/>
+  </uml:Class>
+  <uml:Class xmi:id="_JWrxUqRjEeOW-_uBDkdYPw" name="Courses">
+    <ownedAttribute xmi:id="_JWu0oKRjEeOW-_uBDkdYPw" name="Name"/>
+  </uml:Class>
+  <uml:Class xmi:id="_JWrxU6RjEeOW-_uBDkdYPw" name="Card">
+    <ownedAttribute xmi:id="_JWu0oaRjEeOW-_uBDkdYPw" name="Number"/>
+  </uml:Class>
+  <uml:AssociationClass xmi:id="_JWsYYKRjEeOW-_uBDkdYPw" name="Classes" memberEnd="_JWvbsaRjEeOW-_uBDkdYPw _JWxQ4KRjEeOW-_uBDkdYPw">
+    <ownedAttribute xmi:id="_JWvbsKRjEeOW-_uBDkdYPw" name="Room"/>
+    <ownedEnd xmi:id="_JWvbsaRjEeOW-_uBDkdYPw" name="Students" association="_JWsYYKRjEeOW-_uBDkdYPw"/>
+    <ownedEnd xmi:id="_JWxQ4KRjEeOW-_uBDkdYPw" name="Courses" association="_JWsYYKRjEeOW-_uBDkdYPw"/>
+  </uml:AssociationClass>
+</xmi:XMI>

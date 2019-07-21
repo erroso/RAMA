@@ -1,0 +1,86 @@
+model School
+ 
+
+
+-- ENUMERATIONS
+
+
+
+-- CLASSES
+class School
+-- 
+attributes
+	courses : Courses
+	students : Students
+	teachers : Teachers
+	classes : Classes
+
+end
+
+class Courses
+-- 
+attributes
+	name : String
+
+end
+
+class Students
+-- 
+attributes
+	name : String
+	card : Card
+
+end
+
+class Teachers
+-- 
+attributes
+	name : String
+
+end
+
+associationclass Classes between 
+	Students[1] role Students
+	Courses[1] role Courses
+
+-- 
+attributes
+	room : String
+
+end
+
+class Card
+-- 
+attributes
+	number : String
+
+end
+
+-- ASSOCIATIONS
+		
+association controls_0 between
+  School[1] role controls
+  Courses[1] role Courses
+end
+association controls_1 between
+  School[1] role controls
+  Students[1] role Students
+end
+association controls_2 between
+  School[1] role controls
+  Teachers[1] role Teachers
+end
+association controls_3 between
+  School[1] role controls
+  Classes[1] role Classes
+end
+
+-- ASSOCIATIONS HAS
+		
+association has_0 between
+  Students[1] role controls
+  Card[1] role Card
+end
+
+-- OCL RESTRICTIONS
+constraints 	

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MindMapDomainModel:MindMapModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:MindMapDomainModel="MindMapDomainModel">
+  <nodes xsi:type="MindMapDomainModel:RootNode" nodeText="School"/>
+  <nodes xsi:type="MindMapDomainModel:Entity" nodeText="Courses" attributes="//@nodes.10"/>
+  <nodes xsi:type="MindMapDomainModel:Entity" nodeText="Students" attributes="//@nodes.6" entities="//@nodes.5"/>
+  <nodes xsi:type="MindMapDomainModel:Entity" nodeText="Teachers" attributes="//@nodes.8"/>
+  <nodes xsi:type="MindMapDomainModel:AssociationEntity" nodeText="Classes" attributes="//@nodes.9">
+    <associations nodeText="Students" attributes="//@nodes.6" entities="//@nodes.5"/>
+    <associations nodeText="Courses" attributes="//@nodes.10"/>
+  </nodes>
+  <nodes xsi:type="MindMapDomainModel:Entity" nodeText="Card" attributes="//@nodes.7"/>
+  <nodes xsi:type="MindMapDomainModel:Attribute" nodeText="Name"/>
+  <nodes xsi:type="MindMapDomainModel:Attribute" nodeText="Number"/>
+  <nodes xsi:type="MindMapDomainModel:Attribute" nodeText="Name"/>
+  <nodes xsi:type="MindMapDomainModel:Attribute" nodeText="Room"/>
+  <nodes xsi:type="MindMapDomainModel:Attribute" nodeText="Name"/>
+  <edges source="//@nodes.0" target="//@nodes.1"/>
+  <edges source="//@nodes.0" target="//@nodes.2"/>
+  <edges source="//@nodes.0" target="//@nodes.3"/>
+  <edges source="//@nodes.0" target="//@nodes.4"/>
+  <edges source="//@nodes.2" target="//@nodes.5"/>
+  <edges source="//@nodes.2" target="//@nodes.6"/>
+  <edges source="//@nodes.5" target="//@nodes.7"/>
+  <edges source="//@nodes.3" target="//@nodes.8"/>
+  <edges source="//@nodes.4" target="//@nodes.9"/>
+  <edges source="//@nodes.1" target="//@nodes.10"/>
+</MindMapDomainModel:MindMapModel>

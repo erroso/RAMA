@@ -1,0 +1,138 @@
+model [% out.println(MMClass!RootNode.allInstances().first().nodeText); %]
+[% var DEFAULT_VAR_TYPE = "String"; var VAR_TYPE_CONNECTOR = " : "; var VAR_TYPE_BY_INFERECE : Map; %]
+[% for (node in MMClass!Entity.allInstances().select(r : Entity | r.oclRules <> null)) { %][% for (e in node.oclRules.split("\\n")) { parseOCL(e,VAR_TYPE_BY_INFERECE); } %][%	} %] 
+[% out.println(""); %]
+
+-- ENUMERATIONS
+
+[% for (node in MMClass!Enum) { %]
+enum [%=node.nodeText%] {[% for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) { %]
+		[% out.print(e.target.nodeText.toUpperCase());
+		if (hasMore){out.print(", ");} %]
+	[% } %]}			
+[% } %]
+[% out.println(""); %]
+
+-- CLASSES
+[% for (node in MMClass!RootNode) {
+out.print(printNode(node, VAR_TYPE_CONNECTOR, VAR_TYPE_BY_INFERECE));
+} %]
+[% 
+var mappedEntities : Map;
+for (node in MMClass!Entity) {
+if (mappedEntities.get(node.nodeText) == null) {
+out.print(printNode(node, VAR_TYPE_CONNECTOR, VAR_TYPE_BY_INFERECE));
+}
+mappedEntities.put(node.nodeText,node);
+} %]
+-- ASSOCIATIONS
+[%var i = 0;%]		
+[% for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = MMClass!RootNode.allInstances().first())) { %]
+[% if (e.name == null or e.size() == 0) { %]
+association controls_[%= i %] between
+[% } else { %]
+association [%=e.name %] between
+[%} %]
+  [%= e.source.nodeText%][1] role controls
+  [%= e.target.nodeText%][1] role [%= e.target.nodeText%]
+end
+[% i = i+1; }%]
+
+-- ASSOCIATIONS HAS
+[%var i = 0;%]		
+[% for (e in MMClass!Edge.allInstances().select( e : Edge | (e.source.type().name.equals("Entity") or e.source.type().name.equals("AssociationEntity")) and
+ (e.target.type().name.equals("Entity") or e.target.type().name.equals("AssociationEntity")) )) { %]
+association has_[%= i %] between
+  [%= e.source.nodeText%][1] role controls
+  [%= e.target.nodeText%][1] role [%= e.target.nodeText%]
+end
+[% i = i+1; }%]
+
+-- OCL RESTRICTIONS
+constraints 	
+[% 
+for (node in MMClass!Entity.allInstances().select(r : Entity | r.oclRules <> null and r.oclRules.trim().length > 0)) { %]
+[% out.println("\t"+node.oclRules); %][% }
+// relational_operator::= "=" | ">" | "<" | ">=" | "<=" | "<>". 
+operation Any parseOCL(ocl : String, types_found : Map) : Map {
+	//first parse by relation_operator	
+	var all = ocl.split("(>|=|<|>=|<=|<>)");
+	if (all.size() > 1) {
+		var name = all[1].trim().split("\\.").last();
+		var value = all.last().trim();
+		var type;	
+		//out.println(name + " ----> " + value);	
+		//then find the next string after operator
+		if (value.matches("[0-9]* *(\\)|and|or)")) { //if number then it's real ou integer
+			//out.println("Integer");
+			type = "Integer";	
+		} else if (value.matches("[0-9]*\\.[0-9]* *(\\)|and|or)")) {
+			//out.println("Real");
+			type = "Real";
+		} else {
+			//out.println("String");
+			type = "String";
+		}
+		if (not type.equals("String"))	
+			types_found.put(name.toLowerCase(),type);
+	}
+	return types_found;
+}
+
+operation Any printAttribute(nodeText : String,connector : String, dic : Map) : String {
+	if (dic.containsKey(nodeText.toLowerCase())) {
+		return nodeText.firstToLowerCase() + connector + dic.get(nodeText.toLowerCase());
+	} else {
+		return nodeText.firstToLowerCase() + connector + "String";
+	}
+}
+
+operation Any printEntityAttribute(nodeText : String, connector : String, dic : Map) : String {
+	return nodeText.firstToLowerCase() + connector + printEntity(nodeText);
+}
+
+operation Any printEntity(nodeText : String) : String {
+	return nodeText.firstToUpperCase();	
+}
+
+operation Any printAttributes(node : MMClass!Node, connector : String, dic : Map) : String {
+	var attributes = "attributes\n";	
+	if (node.type().name.equals("RootNode")) {
+		for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+			attributes = attributes + "\t"+e.target.nodeText.firstToLowerCase() + connector + e.target.nodeText.firstToUpperCase() + "\n";
+		}			
+	} else {
+		for (e in node.attributes) {
+			attributes = attributes + "\t"+printAttribute(e.nodeText,connector,dic) + "\n";
+		}
+		for (e in node.entities) {
+			attributes = attributes + "\t"+printEntityAttribute(e.nodeText,connector,dic) + "\n";
+		}	
+	}
+	return attributes;
+}
+operation Any printNode(node : MMClass!Node, connector : String, dic : Map) : String {
+	var result = "";
+	var description = "-- " + node.description;
+	var title = "class";
+	var between = "";
+	var attributes = printAttributes(node, connector, dic);
+	if (node.type().name.equals("AssociationEntity")) {
+		var ac : MMClass!AssociationEntity;
+		ac = node;		
+		title = "associationclass " + ac.nodeText;
+		if (ac.associations.size() > 0) {
+			title = title + " between \n";
+			title = title + "\t" + ac.associations[0].nodeText.firstToUpperCase() + "[1] role " + ac.associations[0].nodeText.firstToUpperCase() + "\n";
+			title = title + "\t" + ac.associations[1].nodeText.firstToUpperCase() + "[1] role " + ac.associations[1].nodeText.firstToUpperCase() + "\n";						
+		}
+	} else {
+		title = title + " " + printEntity(node.nodeText);
+	}	
+	result = title + "\n";
+	result = result + description + "\n";
+	result = result + attributes + "\n";
+	result = result + "end" + "\n\n";
+	return result;
+}
+%]

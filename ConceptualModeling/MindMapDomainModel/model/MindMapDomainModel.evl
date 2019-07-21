@@ -1,0 +1,242 @@
+// ------------------------------------------------------------------------------------------------
+// 
+// GENERIC MIND MAP RESTRICTIONS
+//
+// ------------------------------------------------------------------------------------------------
+context RootNode {
+	constraint OnlyOneRoot {
+		check : self.select(f : Node | isCenter(f.type())).size() = 1		
+		message: 'There can only be one root type Node in a MindMap Model'
+	}
+}
+
+context Node {
+	constraint nameNotEmpty {
+		check : self.nodeText.isDefined()
+		
+		message: 'Node "' + self.nodeText + '" must have a name'
+	}
+	constraint OnlyOneWord {
+		check : self.nodeText.asString().matches("^[a-zA-Z]+$")
+		
+		message: 'Node "' + self.nodeText + '" must only have one word'
+	}	
+}
+
+context MindMapModel {
+	// CHANGED FOR THIS CASE ONLY		
+	constraint EveryNodeMustHaveAEdge {
+		check {
+			var n = Node;
+			n = self.nodes.select(n : Node | not n.type().name.equals("Enum") and self.edges.select(c: Edge | c.source = n or c.target = n).isEmpty());
+			return n.isEmpty();
+		}				
+		message : 'All nodes must have a edge associated: ' + transformSetToReadable(n+"")
+	}			
+}
+
+context Edge {	
+	constraint PointToSelf {
+		check {						
+			var r = self.select(e: Edge | ((e.source <> null  and e.source.nodeText <> null) and e.source.nodeText.equals(e.target.nodeText) and e.source.type().name.equals(e.target.type().name)));
+			return r.size() == 0;
+		}		
+		message : 'Nodes cannot connect to themselves: ' + transformSetToReadable(r.first.target+"") 	
+	}
+}	
+
+// ------------------------------------------------------------------------------------------------
+// 
+// DOMAIN MODEL MIND MAP RESTRICTIONS
+//
+// ------------------------------------------------------------------------------------------------
+context MindMapModel {
+	constraint AttributesCanOnlyPointToEntity {
+		check {
+			var n = self.nodes.select(n : Node | isAttribute(n.type()) and
+				self.edges.select(c: Edge | c.target = n and (isEntity(c.source.type()) or isAssociativeEntity(c.source.type()))).isEmpty());
+			return n.isEmpty();
+		}				
+		message : 'Atributes can only link to Entities: ' + transformSetToReadable(n+"")
+	}
+	
+	constraint EntityMustPointToRootNodeOrEntities {
+		check {
+			var n = Node;
+			n = self.nodes.select(n : Node | isEntity(n.type()) and self.edges.select(c: Edge | (isCenter(c.source.type()) or isEntity(c.source.type()) or isAssociativeEntity(c.source.type())) and c.target = n).isEmpty());
+			return n.isEmpty();
+		}				
+		message : 'Entities must point to Domain or Entities Node"s: ' + transformSetToReadable(n+"")
+	}	
+	constraint AnAssociatedAttributeMustHasAEntity { 
+		check { 
+			var normalClasses = self.nodes.select(n: Node | isEntity(n.type())); 
+			var entityAtributes = self.nodes.select(n : AssociationEntity | isAssociativeEntity(n.type()));
+			var f = true;
+			var badNode = "";			
+			for (l in entityAtributes) {
+				for (a in l.associations) {
+					f = false;			
+					for (r in normalClasses) {					
+						if (r.nodeText.equals(a.nodeText)) {
+							f = true;
+							break;
+						}
+					}
+					if (not f) {
+						badNode = l;
+						break;
+					}
+				}
+				if (not f) {					
+					break;
+				}
+							
+			}
+			return f == true;
+		} 
+		message : 'An AssociationEntity must have a correspoding Entity: ' + transformSetToReadable(badNode+"")
+	}
+	constraint OnlyOneEntityHasAttributesDefined { 
+		check { 
+			var entities = self.nodes.select(n: Node | isEntity(n.type())); 
+			var f = true;
+			var badNode = "";	
+			for (e in entities) {
+				//var entityAtributes = self.nodes.select(n : AssociationEntity | isAssociativeEntity(n.type()));
+			}
+						
+			return f == true;
+		} 
+		message : 'An AssociationEntity must have a correspoding Entity: ' + transformSetToReadable(badNode+"")
+	}	
+	constraint ThereCanBeOnlyOneDefinitionOfEntityForEachParentNode { 
+		check { 
+			var root_sons = self.edges.select(e: Edge | isCenter(e.source.type())); 
+			var f = true;
+			var badNode = "";			
+			var entitiesToParse = new Sequence;			
+			badNode = checkIfOnlyOneDefinition(root_sons);
+			if (badNode <> null) {
+				return false;
+			} else {				
+				var entities = self.nodes.select(n : Node | isEntity(n.type()));
+				for (e in entities) {
+					var sons = self.edges.select(ee: Edge | ee.source = e);
+					badNode = checkIfOnlyOneDefinition(sons);
+					if (badNode <> null) { return false; }
+				}
+			}						
+			return f == true;
+		} 
+		message : 'Only one Entity definition per node is allowed: ' + transformSetToReadable(badNode+"")
+	}		
+}
+//No Enumerate attribute can be associated
+context Edge {	
+	constraint NoNodePointToEnumerate {
+		check {						
+			var r = self.select(e: Edge | ( isEnum(e.target.type())));
+			return r.size() == 0;
+		}		
+		message : 'Nodes cannot point to Enumeration nodes: ' + transformSetToReadable(r.first.source+"") 
+	}
+	constraint EnumerateNodesCanOnlyPointToLeafNodes {
+		check {						
+			var r = self.select(e: Edge | (isEnum(e.source.type()) and not isConstant(e.target.type())));
+			return r.size() == 0;
+		}		
+		message : 'Enumeration nodes can only connect to Constants nodes: ' + transformSetToReadable(r.first.target+"") 
+	}	
+}
+
+// ------------------------------------------------------------------------------------------------
+// 
+// USE RESTRICTIONS
+//
+// ------------------------------------------------------------------------------------------------
+
+//One Class does not the same attributes
+
+// ------------------------------------------------------------------------------------------------
+// 
+// OPERATIONS
+//
+// ------------------------------------------------------------------------------------------------
+
+operation Any isCenter(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("RootNode")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any isEntity(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("Entity")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any isAssociativeEntity(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("AssociationEntity")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any isAttribute(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("Attribute")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any isConstant(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("Constant")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any isEnum(c : EClass) : Boolean {
+	if (c.isUndefined()) return false;
+	if (c.name.equals("Enum")) {
+		return true;
+	} else {
+		return false;
+	}
+}
+operation Any transformSetToReadable(set : String ) : String {	
+	var r = set.split("nodeText=");	
+	var result : String;
+	var i = 0;
+	for (s in r) {		
+		if (i > 0) {			
+			if (result.isEmpty()) {
+				result = s.split(",")[0];	
+			} else {
+				result = result + ", " + s.split(",")[0];
+			}		
+		}		
+		i = i + 1;
+	}	  	
+	return result.trim();
+}
+operation Any checkIfOnlyOneDefinition(nodes : Collection) : Entity {
+	var parsedEntities = new Map;
+	var badNode = null;
+	for (e in nodes) {
+		if (parsedEntities.containsKey(e.target.nodeText)) {			
+			badNode = e.target;
+			break;
+		}			
+		parsedEntities.put(e.target.nodeText,"");	
+	}	
+	return badNode;
+}

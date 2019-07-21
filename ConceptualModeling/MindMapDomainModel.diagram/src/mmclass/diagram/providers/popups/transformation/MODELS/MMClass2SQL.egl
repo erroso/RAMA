@@ -1,0 +1,7 @@
+[%	
+	TemplateFactory.setTemplateRoot(".");
+	var root = "./transformations/";	
+	
+	var t2 : Template := TemplateFactory.load('./TransDetails/MMClass2SQL.egl');
+	t2.generate(root+"/SQL/Sql.sql");
+%]

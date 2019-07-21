@@ -1,0 +1,21 @@
+[%			
+	TemplateFactory.setTemplateRoot(".");
+	var root = "./transformations/"; 	
+	var t : Template = TemplateFactory.load("./TransDetails/MMClass2OCL.egl");				
+	var mappedEntities : Map;
+	t.generate(root+"/classes/"+"/ocl.ocl");									
+	for (e in MMClass!Entity) { //Edge.allInstances().select( e : Edge | e.source = MMClass!RootNode.allInstances().first())) {
+		if (mappedEntities.get(e.nodeText) == null) {
+			var t : Template = TemplateFactory.load("./TransDetails/MMClass2JavaClass.egl");				
+			t.populate("Entity", e);
+			t.generate(root+"/classes/" + e.nodeText.firstToUpperCase() +".java");
+		}
+		mappedEntities.put(e.nodeText,e);		
+	}
+	
+	for (e in MMClass!Enum) {
+		var t : Template = TemplateFactory.load("./TransDetails/MMClass2Enumeration.egl");		
+		t.populate("Enum", e);
+		t.generate(root+"/classes/enumerations/"+ e.nodeText.toUpperCase + ".java");
+	}	
+%]

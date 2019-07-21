@@ -1,0 +1,7 @@
+# Tracing options for the mmbdd.diagram plug-in
+
+# Common issues
+mmbdd.diagram/debug=false
+
+# Visual IDs
+mmbdd.diagram/debug/visualID=false

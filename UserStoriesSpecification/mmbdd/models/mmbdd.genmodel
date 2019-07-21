@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" copyrightText="" modelDirectory="/mmbdd/src" modelPluginID="mmbdd"
+    modelName="Mmbdd" importerID="org.eclipse.emf.importer.ecore" complianceLevel="6.0"
+    copyrightFields="false">
+  <foreignModel>mmbdd.emf</foreignModel>
+  <genPackages prefix="Mmbdd" disposableProviderFactory="true" ecorePackage="mmbdd.ecore#/">
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="mmbdd.ecore#//EgdeLogicTypes">
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//EgdeLogicTypes/None"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//EgdeLogicTypes/Equal"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//EgdeLogicTypes/Different"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//EgdeLogicTypes/Bigger"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//EgdeLogicTypes/Smaller"/>
+    </genEnums>
+    <genEnums typeSafeEnumCompatible="false" ecoreEnum="mmbdd.ecore#//NodeTypes">
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//NodeTypes/Given"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//NodeTypes/When"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//NodeTypes/Then"/>
+      <genEnumLiterals ecoreEnumLiteral="mmbdd.ecore#//NodeTypes/As"/>
+    </genEnums>
+    <genClasses ecoreClass="mmbdd.ecore#//MindMapModel">
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference mmbdd.ecore#//MindMapModel/nodes"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference mmbdd.ecore#//MindMapModel/edges"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference mmbdd.ecore#//MindMapModel/content"/>
+    </genClasses>
+    <genClasses ecoreClass="mmbdd.ecore#//Content"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Edge">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference mmbdd.ecore#//Edge/source"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference mmbdd.ecore#//Edge/target"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mmbdd.ecore#//Edge/logic"/>
+    </genClasses>
+    <genClasses ecoreClass="mmbdd.ecore#//Node">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mmbdd.ecore#//Node/nodeText"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference mmbdd.ecore#//Node/notation"/>
+    </genClasses>
+    <genClasses ecoreClass="mmbdd.ecore#//Group">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference mmbdd.ecore#//Group/nodes"/>
+    </genClasses>
+    <genClasses ecoreClass="mmbdd.ecore#//Leaf"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Center"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Relationship">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mmbdd.ecore#//Relationship/type"/>
+    </genClasses>
+    <genClasses ecoreClass="mmbdd.ecore#//Notation"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Textual"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Icon"/>
+    <genClasses ecoreClass="mmbdd.ecore#//Image"/>
+  </genPackages>
+</genmodel:GenModel>

@@ -1,0 +1,61 @@
+[%
+
+operation Any printAttribute(nodeText : String, type : String,  description : String, connector : String, dic : Map) : String {
+	return "private " + type + " " + nodeText.firstToLowerCase() + "; " + printDescription(description);
+}
+
+operation Any printEntity(nodeText : String) : String {
+	return nodeText.firstToUpperCase();	
+}
+
+operation Any printDescription(description : String) : String {
+	if (description == null) {
+		return;
+	} else if (description.trim.length == 0) {
+		return;
+	}
+	return "/** " + description + " */\n";	
+}
+operation Any printFunctions(node : MMClass!Node) : String {
+	var functions = "";	
+	for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+		functions = functions + 
+			"\tpublic void set"+e.target.nodeText.firstToUpperCase()+"(String value) { \n" +
+			"\t\t"+ e.target.nodeText.toLowerCase() + " = " + "value" + ";\n" +
+			"\t}\n";
+		functions = functions + 
+			"\tpublic String get"+e.target.nodeText.firstToUpperCase()+"() { \n" +
+			"\t\treturn "+ e.target.nodeText.toLowerCase() + ";\n" +
+			"\t}\n";			
+	}
+	return functions;
+}
+operation Any printAttributes(node : MMClass!Node, connector : String, dic : Map) : String {
+	var attributes = "";	
+	for (e in MMClass!Edge.allInstances().select( e : Edge | e.source = node)) {
+		attributes = attributes + "\t"+printAttribute(e.target.nodeText,connector,e.target.description,dic) + "\n";
+	}
+	return attributes;
+}
+operation Any printConstructor(node : MMClass!Node) : String {
+	var constructor = "";
+	constructor = "\tpublic " + node.nodeText + "() { \n \t\t// TODO \n \t}";
+	return constructor;
+}
+
+operation Any printNode(node : MMClass!Node, connector : String, dic : Map) : String {
+	var result = "";
+	var description = printDescription(node.description);
+	var title = "class";
+	var attributes = printAttributes(node, connector, dic);
+	var functions = printFunctions(node);
+	var constructor = printConstructor(node);
+	title = title + " " + printEntity(node.nodeText);
+	result = title + " {" + "\n";	
+	result = result + description + "\n";
+	result = result + attributes + "\n";
+	result =  result + constructor + "\n";
+	result = result + functions + "\n" + "}";	
+	return result;
+}
+%]

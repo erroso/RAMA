@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Custom
+Bundle-SymbolicName: mmbdd.diagram.custom; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Export-Package: mmbdd.diagram.layout
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench,
+ org.eclipse.emf.edit.ui,
+ org.eclipse.gef;visibility:=reexport,
+ org.eclipse.gmf.runtime.emf.core,
+ org.eclipse.gmf.runtime.emf.commands.core,
+ org.eclipse.gmf.runtime.emf.ui.properties,
+ org.eclipse.gmf.runtime.diagram.ui,
+ mmbdd,
+ mmbdd.diagram,
+ mmbdd.edit,
+ org.eclipse.gmf.runtime.diagram.ui.providers
+

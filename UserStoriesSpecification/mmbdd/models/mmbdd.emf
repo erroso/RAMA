@@ -1,0 +1,67 @@
+@namespace(uri="http://mmbdd.com", prefix="mmbdd")
+package mmbdd;
+
+@gmf.diagram(foo="bar")
+class MindMapModel {  	
+  	val Node[*] nodes;
+	val Edge[*] edges;		
+	val Content[+] content;
+}
+class Content {
+	
+}
+
+@gmf.link(source="source", target="target",color="0,0,0", width="2", label.placement="external", target.decoration="none")
+class Edge {
+	ref Node[1] source;
+	ref Node[1] target;
+	attr EgdeLogicTypes[1] logic = "0";
+}
+
+class Node {
+	id unique attr String nodeText;
+	ref Notation[1] notation;	
+}
+
+class Group extends Node {
+	ref Node[*] nodes;
+			
+}
+
+@gmf.node(label="nodeText", label.placement="internal", figure="rectangle")
+class Leaf extends Node {
+	
+}
+
+@gmf.node(label="nodeText", label.placement="internal", figure="rectangle")
+class Center extends Group {
+		
+}
+
+@gmf.node(label="nodeText",  label.placement="internal", figure="rectangle")
+class Relationship extends Group {
+	attr NodeTypes[1] type = "1";	
+}
+
+enum EgdeLogicTypes {
+	None = 0;
+	Equal = 1;
+	Different = 2;
+	Bigger = 3;
+	Smaller = 4;	
+}
+enum NodeTypes {
+  Given = 1;
+  When = 2;     
+  Then = 3;
+  As = 4;
+}
+
+class Notation {   	
+}
+class Textual extends Notation {  	
+}
+class Icon extends Notation {  	
+}
+class Image extends Notation {  	
+}

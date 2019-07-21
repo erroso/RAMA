@@ -1,0 +1,97 @@
+[%
+out.print(printNode(Entity, " ", null));
+%]
+
+[%
+operation Any printAttribute(nodeText : String, description : String, connector : String, dic : Map) : String {
+	return "private " + " String " + nodeText.toLowerCase() + "; " + printDescription(description);
+}
+
+operation Any printEntityAttribute(nodeText : String, description : String, connector : String, dic : Map) : String {
+	return "private " + " "+ printEntity(nodeText) +" " + nodeText.toLowerCase() + "; " + printDescription(description);
+}
+
+operation Any printEntity(nodeText : String) : String {
+	return nodeText.firstToUpperCase();	
+}
+
+operation Any printDescription(description : String) : String {
+	if (description == null) {
+		return;
+	} else if (description.trim.length == 0) {
+		return;
+	}
+	return "/** " + description + " */\n";	
+}
+operation Any printFunctions(node : MMClass!Node) : String {
+	var functions = "";	
+	for (e in node.attributes) {
+		functions = functions + 
+			"\tpublic void set"+e.nodeText.firstToUpperCase()+"(String value) { \n" +
+			"\t\t"+ e.nodeText.toLowerCase() + " = " + "value" + ";\n" +
+			"\t}\n";
+		functions = functions + 
+			"\tpublic String get"+e.nodeText.firstToUpperCase()+"() { \n" +
+			"\t\treturn "+ e.nodeText.toLowerCase() + ";\n" +
+			"\t}\n";			
+	}
+	for (e in node.entities) {
+		functions = functions + 
+			"\tpublic void set"+e.nodeText.firstToUpperCase()+"("+printEntity(e.nodeText)+" value) { \n" +
+			"\t\t"+ e.nodeText.toLowerCase() + " = " + "value" + ";\n" +
+			"\t}\n";
+		functions = functions + 
+			"\tpublic " + printEntity(e.nodeText) + " get"+e.nodeText.firstToUpperCase()+"() { \n" +
+			"\t\treturn "+ e.nodeText.toLowerCase() + ";\n" +
+			"\t}\n";			
+	}
+	if (node.type().name.equals("AssociationEntity")) {
+		for (e in node.associations) {
+			functions = functions + 
+			"\tpublic void set"+e.nodeText.firstToUpperCase()+"("+printEntity(e.nodeText)+" value) { \n" +
+			"\t\t"+ e.nodeText.toLowerCase() + " = " + "value" + ";\n" +
+			"\t}\n";
+		functions = functions + 
+			"\tpublic " + printEntity(e.nodeText) + " get"+e.nodeText.firstToUpperCase()+"() { \n" +
+			"\t\treturn "+ e.nodeText.toLowerCase() + ";\n" +
+			"\t}\n";	
+		}
+	}
+	return functions;
+}
+operation Any printAttributes(node : MMClass!Node, connector : String, dic : Map) : String {
+	var attributes = "";	
+	for (e in node.attributes) {
+		attributes = attributes + "\t"+printAttribute(e.nodeText,connector,e.description,dic) + "\n";
+	}
+	for (e in node.entities) {
+		attributes = attributes + "\t"+printEntityAttribute(e.nodeText,connector,e.description,dic) + "\n";
+	}
+	if (node.type().name.equals("AssociationEntity")) {
+		for (e in node.associations) {
+			attributes = attributes + "\t"+printEntityAttribute(e.nodeText,connector,e.description,dic) + "\n";	
+		}
+	}
+	return attributes;
+}
+operation Any printConstructor(node : MMClass!Node) : String {
+	var constructor = "";
+	constructor = "\tpublic " + node.nodeText + "() { \n \t\t// TODO \n \t}";
+	return constructor;
+}
+%]
+[%operation Any printNode(node : MMClass!Node, connector : String, dic : Map) : String {
+	var result = "";
+	var description = printDescription(node.description);
+	var title = "class";
+	var attributes = printAttributes(node, connector, dic);
+	var functions = printFunctions(node);
+	var constructor = printConstructor(node);
+	title = title + " " + printEntity(node.nodeText);
+	result = title + " {" + "\n";	
+	result = result + description + "\n";
+	result = result + attributes + "\n";
+	result =  result + constructor + "\n";
+	result = result + functions + "\n" + "}";	
+	return result;
+}%]
